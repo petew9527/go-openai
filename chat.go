@@ -292,6 +292,7 @@ type ChatCompletionResponse struct {
 func (c *Client) CreateChatCompletion(
 	ctx context.Context,
 	request ChatCompletionRequest,
+	setters ...requestOption,
 ) (response ChatCompletionResponse, err error) {
 	if request.Stream {
 		err = ErrChatCompletionStreamNotSupported
@@ -303,8 +304,8 @@ func (c *Client) CreateChatCompletion(
 		err = ErrChatCompletionInvalidModel
 		return
 	}
-
-	req, err := c.newRequest(ctx, http.MethodPost, c.fullURL(urlSuffix, request.Model), withBody(request))
+	setters = append(setters, withBody(request))
+	req, err := c.newRequest(ctx, http.MethodPost, c.fullURL(urlSuffix, request.Model), setters...)
 	if err != nil {
 		return
 	}

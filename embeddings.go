@@ -304,9 +304,11 @@ func (r EmbeddingRequestTokens) Convert() EmbeddingRequest {
 func (c *Client) CreateEmbeddings(
 	ctx context.Context,
 	conv EmbeddingRequestConverter,
+	setters ...requestOption,
 ) (res EmbeddingResponse, err error) {
 	baseReq := conv.Convert()
-	req, err := c.newRequest(ctx, http.MethodPost, c.fullURL("/embeddings", baseReq.Model.String()), withBody(baseReq))
+	setters = append(setters, withBody(baseReq))
+	req, err := c.newRequest(ctx, http.MethodPost, c.fullURL("/embeddings", baseReq.Model.String()), setters...)
 	if err != nil {
 		return
 	}
